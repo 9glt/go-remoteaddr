@@ -17,14 +17,19 @@ func getClientIp(r *http.Request) string {
 	return remote_addr
 }
 
-func IP(r *http.Request, proxies []string) Addr {
+// IP takes *http.Request, proxies ips and depth - how many proxies before my app
+func IP(r *http.Request, proxies []string, depth int) Addr {
 	clientIP := getClientIp(r)
 	ack := Addr{IP: clientIP}
 	ack.XForIP = r.Header.Get("X-Forwarded-For")
 	ack.XRealIP = r.Header.Get("X-Real-IP")
 	if inList(clientIP, proxies) {
 		ack.BehindProxy = true
-		ack.IP = strings.TrimSpace(strings.Split(ack.XForIP, ",")[0])
+		xfips := strings.Split(ack.XForIP, ",")
+		if (depth - 1) > -1 {
+			depth = depth - 1
+			ack.IP = strings.TrimSpace(xfips[len(xfips)-depth-1])
+		}
 		if ack.XRealIP != "" {
 			ack.IP = ack.XRealIP
 		}
