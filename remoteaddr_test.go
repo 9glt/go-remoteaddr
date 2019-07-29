@@ -50,10 +50,15 @@ func TestMain(t *testing.T) {
 
 	request, _ = http.NewRequest("GET", "/path", nil)
 	request.Header.Set("X-Forwarded-For", "99.99.99.99, 192.168.100.100, 192.168.0.0, 127.0.0.1")
-	request.RemoteAddr = "127.0.0.1:12313"
+	request.RemoteAddr = "127.0.0.3:12313"
 
-	addr4 := IP(request, []string{"127.0.0.1"}, 2)
+	addr4 := IP(request, []string{"127.0.0.3"}, 2)
 	if addr4.IP != "192.168.0.0" {
+		t.Fatalf("%+v", addr4)
+	}
+
+	addr5 := IP(request, []string{}, 0)
+	if addr5.IP != "127.0.0.3" {
 		t.Fatalf("%+v", addr4)
 	}
 
