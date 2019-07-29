@@ -26,7 +26,7 @@ func IP(r *http.Request, proxies []string, depth int) Addr {
 	if inList(clientIP, proxies) {
 		ack.BehindProxy = true
 		xfips := strings.Split(ack.XForIP, ",")
-		if (depth - 1) > -1 {
+		if (depth-1) > -1 && len(xfips) > 0 {
 			depth = depth - 1
 			ack.IP = strings.TrimSpace(xfips[len(xfips)-depth-1])
 		}
